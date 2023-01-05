@@ -23,7 +23,7 @@ CPMAddPackage(
 CPMAddPackage(
         NAME nlohmann_json
         VERSION ${NLOHMANN_VERSION}
-        URL  https://github.com/nlohmann/json/releases/download/v${NLOHMANN_VERSION}/include.zip
+        URL https://github.com/nlohmann/json/releases/download/v${NLOHMANN_VERSION}/include.zip
 )
 
 if(nlohmann_json_ADDED)
@@ -39,6 +39,8 @@ CPMAddPackage(
 
 # --- Target ---
 
-add_library(${ENGINE_LIB} STATIC src/tmp.cpp)
+add_library(${ENGINE_LIB} STATIC src/engine/coreModule/Game.cpp src/engine/coreModule/Game.h)
 
 target_link_libraries(${ENGINE_LIB} fmt::fmt nlohmann_json SDL2main SDL2-static)
+
+target_include_directories(${ENGINE_LIB} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
