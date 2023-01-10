@@ -2,6 +2,7 @@
 // Created by Vladimir on 05.01.2023.
 //
 #include <iostream>
+#include <filesystem>
 
 #include "SDL_image.h"
 #include "Game.h"
@@ -84,17 +85,20 @@ void Game::Render() {
 	SDL_SetRenderDrawColor(m_renderer.get(), 100, 100, 100, 255);
 	SDL_RenderClear(m_renderer.get());
 
-	{
-		SDL_SetRenderDrawColor(m_renderer.get(), 255, 255, 255, 255);
-		SDL_Rect r = {0, 0, 500, 500};
-		SDL_RenderFillRect(m_renderer.get(), &r);
+	SDL_Surface* s = IMG_Load("assets/images/tank-tiger-right.png");
+	if (!s) {
+		std::cout << SDL_GetError() << std::endl;
+		std::cout << "image is not loaded!" << ' ' << std::filesystem::current_path() << std::endl;
+		std::cout << SDL_GetBasePath() << std::endl;
 	}
+	SDL_Texture* t = SDL_CreateTextureFromSurface(m_renderer.get(), s);
+	SDL_FreeSurface(s);
 
-	{
-		SDL_SetRenderDrawColor(m_renderer.get(), 255, 0, 0, 255);
-		SDL_Rect r = {1400, 900, 100, 100};
-		SDL_RenderFillRect(m_renderer.get(), &r);
-	}
+	SDL_Rect dstRect = { 10, 10, 32, 32 };
+
+	SDL_RenderCopy(m_renderer.get(), t, nullptr, &dstRect);
+	SDL_DestroyTexture(t);
+
 	//TODO
 	int w, h;
 	SDL_GetRendererOutputSize(m_renderer.get(), &w, &h);

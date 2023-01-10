@@ -8,6 +8,6 @@ set(ENGINE_LIB engine)
 add_subdirectory("engine" engine)
 
 if (BUILD_DEMO)
-    message("BUILD_DEMO = true")
+    message("BUILD_DEMO=TRUE")
     add_subdirectory("demo")
 endif()
