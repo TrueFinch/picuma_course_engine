@@ -1,7 +1,5 @@
+#define SDL_MAIN_HANDLED
 #include <iostream>
-#include <nlohmann/json.hpp>
-#include <fmt/format.h>
-#include <SDL.h>
 #include "engine/coreModule/Game.h"
 
 int main(int argc, char *argv[]) {
