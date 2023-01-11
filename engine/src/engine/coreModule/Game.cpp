@@ -3,6 +3,7 @@
 //
 #include <iostream>
 #include <filesystem>
+#include <glm/glm.hpp>
 
 #include "SDL_image.h"
 #include "Game.h"
@@ -85,7 +86,7 @@ void Game::Render() {
 	SDL_SetRenderDrawColor(m_renderer.get(), 100, 100, 100, 255);
 	SDL_RenderClear(m_renderer.get());
 
-	SDL_Surface* s = IMG_Load("assets/images/tank-tiger-right.png");
+	SDL_Surface* s = IMG_Load("../assets/images/tank-tiger-right.png");
 	if (!s) {
 		std::cout << SDL_GetError() << std::endl;
 		std::cout << "image is not loaded!" << ' ' << std::filesystem::current_path() << std::endl;

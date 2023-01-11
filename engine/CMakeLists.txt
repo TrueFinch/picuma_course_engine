@@ -4,10 +4,8 @@ add_library(${ENGINE_LIB} STATIC
 )
 
 find_package(ZLIB REQUIRED)
-set(CMAKE_FIND_DEBUG_MODE TRUE)
 find_package(PNG REQUIRED)
-set(CMAKE_FIND_DEBUG_MODE FALSE)
-
+find_package(glm CONFIG REQUIRED)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(SDL2_image CONFIG REQUIRED)
 
@@ -24,8 +22,8 @@ target_link_libraries(${ENGINE_LIB}
     PRIVATE
     $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
 
-    PRIVATE
-    PNG::PNG
+    PRIVATE PNG::PNG
+    PRIVATE glm::glm
 )
 
 target_include_directories(${ENGINE_LIB} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
