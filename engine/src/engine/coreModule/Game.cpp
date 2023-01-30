@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 
 
-#include "Game.h"
+#include "engine/logModule/LogManager.h"
 
 using namespace pce;
 
@@ -18,7 +18,7 @@ Game::Game() : m_window(nullptr, SDL_DestroyWindow), m_renderer(nullptr, SDL_Des
 
 void Game::Initialize() {
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		std::cerr << "[Game::Initialize] ERROR: failed to initialize sdl!" << std::endl;
+		pce::logError("[Game::Initialize] ERROR: failed to initialize sdl!");
 		return;
 	}
 
@@ -33,7 +33,7 @@ void Game::Initialize() {
 			width, height, SDL_WINDOW_RESIZABLE
 	));
 	if (!m_window) {
-		std::cerr << "[Game::Initialize] ERROR: failed to create sdl window!" << std::endl;
+		pce::logError("[Game::Initialize] ERROR: failed to create sdl window!");
 		return;
 	}
 
@@ -41,7 +41,7 @@ void Game::Initialize() {
 			m_window.get(), -1, 0
 	));
 	if (!m_renderer) {
-		std::cerr << "[Game::Initialize] ERROR: failed to create sdl renderer!" << std::endl;
+		pce::logError("[Game::Initialize] ERROR: failed to create sdl renderer!");
 		return;
 	}
 
@@ -49,6 +49,9 @@ void Game::Initialize() {
 //		m_window.get(),
 //		SDL_WINDOW_FULLSCREEN
 //	);
+
+	//init systems //TODO move systems creation to some system's controller
+	logModule::LoggerInstance::Init(logModule::LogManager::create());
 
 	m_isRunning = true;
 }
@@ -102,9 +105,7 @@ void Game::Render() {
 
 	SDL_Surface* s = IMG_Load("../assets/images/tank-tiger-right.png");
 	if (!s) {
-		std::cout << SDL_GetError() << std::endl;
-		std::cout << "image is not loaded!" << ' ' << std::filesystem::current_path() << std::endl;
-		std::cout << SDL_GetBasePath() << std::endl;
+		pce::logError("{}", SDL_GetError());
 	}
 	SDL_Texture* t = SDL_CreateTextureFromSurface(m_renderer.get(), s);
 	SDL_FreeSurface(s);
