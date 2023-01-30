@@ -1,11 +1,12 @@
 //
 // Created by Vladimir on 05.01.2023.
 //
-#include <iostream>
 #include <filesystem>
+#include <iostream>
+#include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
 
-#include "SDL_image.h"
+
 #include "Game.h"
 
 using namespace pce;
@@ -55,6 +56,7 @@ void Game::Initialize() {
 void Game::Run() {
 	while (m_isRunning) {
 		ProcessInput();
+		Delay();
 		Update();
 		Render();
 	}
@@ -78,9 +80,21 @@ void Game::ProcessInput() {
 	}
 }
 
-void Game::Update() {
-
+void Game::Delay() const {
+	if (!m_capFPS) {
+		return;
+	}
+	if (const uint32 ticks = SDL_GetTicks(); m_milliPerFrame + m_prevFrameMillis > ticks) {
+		SDL_Delay(m_milliPerFrame + m_prevFrameMillis - ticks);
+	}
 }
+
+void Game::Update() {
+	m_deltaTime = static_cast<float>(SDL_GetTicks() - m_prevFrameMillis) / 1000.f;
+	m_prevFrameMillis = SDL_GetTicks();
+}
+
+glm::vec2 tank_pos = {0, 0};
 
 void Game::Render() {
 	SDL_SetRenderDrawColor(m_renderer.get(), 100, 100, 100, 255);
@@ -95,8 +109,9 @@ void Game::Render() {
 	SDL_Texture* t = SDL_CreateTextureFromSurface(m_renderer.get(), s);
 	SDL_FreeSurface(s);
 
-	SDL_Rect dstRect = { 10, 10, 32, 32 };
-
+	SDL_Rect dstRect = {
+		static_cast<int32>(tank_pos.x), static_cast<int32>(tank_pos.y), 32, 32 };
+	tank_pos += glm::vec2{100, 0} * m_deltaTime;
 	SDL_RenderCopy(m_renderer.get(), t, nullptr, &dstRect);
 	SDL_DestroyTexture(t);
 

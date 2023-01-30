@@ -1,6 +1,17 @@
-add_library(${ENGINE_LIB} STATIC
-    src/engine/coreModule/Game.cpp
+add_library(${ENGINE_LIB} STATIC)
+
+set(ENGINE_HEADERS
     src/engine/coreModule/Game.h
+    src/engine/utilsModule/types.h
+)
+
+set(ENGINE_SOURCES
+    src/engine/coreModule/Game.cpp
+)
+
+target_sources(${ENGINE_LIB}
+        PUBLIC ${ENGINE_HEADERS}
+        PRIVATE ${ENGINE_SOURCES}
 )
 
 find_package(ZLIB REQUIRED)
@@ -11,8 +22,6 @@ find_package(SDL2_image CONFIG REQUIRED)
 
 target_include_directories(${ENGINE_LIB}
     PUBLIC ${PNG_INCLUDE_DIR}
-    PUBLIC ${SDL2_INCLUDE_DIRS}
-    PUBLIC ${SDL2IMAGE_INCLUDE_DIRS}
 )
 
 target_link_libraries(${ENGINE_LIB}
