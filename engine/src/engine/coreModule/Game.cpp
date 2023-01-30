@@ -7,10 +7,12 @@
 #include <glm/glm.hpp>
 
 
-#include "engine/logModule/LogManager.h"
+#include "Game.h"
+#include "logModule/LogManager.h"
 
 using namespace pce;
 
+//TODO move to settings file
 int width = 1280, height = 800;
 
 Game::Game() : m_window(nullptr, SDL_DestroyWindow), m_renderer(nullptr, SDL_DestroyRenderer) {
@@ -97,22 +99,22 @@ void Game::Update() {
 	m_prevFrameMillis = SDL_GetTicks();
 }
 
-glm::vec2 tank_pos = {0, 0};
+glm::vec2 tank_pos = { 0, 0 };
 
 void Game::Render() {
 	SDL_SetRenderDrawColor(m_renderer.get(), 100, 100, 100, 255);
 	SDL_RenderClear(m_renderer.get());
 
-	SDL_Surface* s = IMG_Load("../assets/images/tank-tiger-right.png");
+	SDL_Surface *s = IMG_Load("../assets/images/tank-tiger-right.png");
 	if (!s) {
 		pce::logError("{}", SDL_GetError());
 	}
-	SDL_Texture* t = SDL_CreateTextureFromSurface(m_renderer.get(), s);
+	SDL_Texture *t = SDL_CreateTextureFromSurface(m_renderer.get(), s);
 	SDL_FreeSurface(s);
 
 	SDL_Rect dstRect = {
-		static_cast<int32>(tank_pos.x), static_cast<int32>(tank_pos.y), 32, 32 };
-	tank_pos += glm::vec2{100, 0} * m_deltaTime;
+			static_cast<int32>(tank_pos.x), static_cast<int32>(tank_pos.y), 32, 32 };
+	tank_pos += glm::vec2{ 100, 0 } * m_deltaTime;
 	SDL_RenderCopy(m_renderer.get(), t, nullptr, &dstRect);
 	SDL_DestroyTexture(t);
 

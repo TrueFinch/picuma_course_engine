@@ -7,7 +7,8 @@
 #include <memory>
 #include <SDL2/SDL.h>
 
-#include "engine/utilsModule/types.h"
+// TODO remove "engine/" prefix with cmake configuration somehow
+#include "engine/utilsModule/Types.h"
 
 namespace pce {
 
@@ -15,14 +16,22 @@ namespace pce {
 	class Game final {
 	public:
 		explicit Game();
+
 		~Game() = default;
+
 		void Initialize();
+
 		void Run();
+
 		void Destroy();
+
 	private:
 		void ProcessInput();
+
 		void Delay() const;
+
 		void Update();
+
 		void Render();
 
 		bool m_isRunning = false;
