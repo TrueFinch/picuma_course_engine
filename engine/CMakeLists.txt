@@ -4,6 +4,7 @@ set(ENGINE_HEADERS
 	src/engine/coreModule/Game.h
 	src/engine/utilsModule/Types.h
 	src/engine/logModule/LogObserver.h
+	src/engine/logModule/SpdLogger.h
 	src/engine/logModule/LogManager.h
 	src/engine/utilsModule/SystemInstance.h
 )
@@ -11,6 +12,7 @@ set(ENGINE_HEADERS
 set(ENGINE_SOURCES
 	src/engine/coreModule/Game.cpp
 	src/engine/logModule/LogManager.cpp
+	src/engine/logModule/SpdLogger.cpp
 	src/engine/utilsModule/SystemInstance.cpp
 )
 
