@@ -10,6 +10,7 @@ set(ENGINE_HEADERS
 	src/engine/utilsModule/SystemInstance.h
 	src/engine/ecsModule/ECS.h
 	src/engine/ecsModule/components/TransformComponent.h
+	src/engine/ecsModule/systems/MovementSystem.h
 )
 
 set(ENGINE_SOURCES
@@ -17,6 +18,7 @@ set(ENGINE_SOURCES
 	src/engine/logModule/LogManager.cpp
 	src/engine/logModule/SpdLogger.cpp
 	src/engine/ecsModule/ECS.cpp
+	src/engine/ecsModule/systems/MovementSystem.cpp
 )
 
 target_sources(${ENGINE_LIB}
