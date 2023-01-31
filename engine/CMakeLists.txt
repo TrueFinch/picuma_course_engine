@@ -3,6 +3,7 @@ add_library(${ENGINE_LIB} STATIC)
 set(ENGINE_HEADERS
 	src/engine/coreModule/Game.h
 	src/engine/utilsModule/types.h
+	src/engine/utilsModule/KeyId.h
 	src/engine/logModule/LogObserver.h
 	src/engine/logModule/SpdLogger.h
 	src/engine/logModule/LogManager.h
