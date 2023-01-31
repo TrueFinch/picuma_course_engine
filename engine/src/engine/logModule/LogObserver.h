@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "utilsModule/Types.h"
+#include "engine/utilsModule/types.h"
 
 namespace pce::logModule {
 	class LogObserver {
@@ -19,7 +19,7 @@ namespace pce::logModule {
 			return m_id == other.m_id;
 		}
 
-		virtual ~LogObserver() = 0;
+		virtual ~LogObserver() = default;
 
 		virtual void OnRegistered() = 0;
 

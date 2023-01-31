@@ -8,9 +8,10 @@ using namespace pce::logModule;
 using namespace pce::utilsModule;
 
 std::unique_ptr<LogManager> LogManager::create() {
-	auto logger = std::unique_ptr<LogManager>(new LogManager());
+	auto logManager = std::unique_ptr<LogManager>(new LogManager());
 	// TODO create and register spdlog console
-	return logger;
+	logManager->RegisterObserver(logManager->m_spdLogger);
+	return logManager;
 }
 
 void LogManager::Log(eLogLevel lvl, const std::string& msg) const {
@@ -28,13 +29,13 @@ void LogManager::UnregisterObserver(LogObserver& obs) {
 	if (!m_observers.count(obs.m_id)) {
 		return;
 	}
-	m_observers.erase(obs.m_id);
 	obs.OnUnregistered();
+	m_observers.erase(obs.m_id);
 }
 
-LogManager::~LogManager() {
-	for (auto [_, obs] : m_observers) {
+void LogManager::Teardown() {
+	while (!m_observers.empty()) {
+		auto [_, obs] = *(m_observers.begin());
 		UnregisterObserver(obs.get());
 	}
 }
-

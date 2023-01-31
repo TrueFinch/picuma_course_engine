@@ -19,6 +19,10 @@ Game::Game() : m_window(nullptr, SDL_DestroyWindow), m_renderer(nullptr, SDL_Des
 }
 
 void Game::Initialize() {
+	//init systems //TODO move systems creation to some system's controller
+	logModule::LogManagerInstance::Init(logModule::LogManager::create());
+
+	pce::log("Start game initializing");
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
 		pce::logError("[Game::Initialize] ERROR: failed to initialize sdl!");
 		return;
@@ -51,9 +55,6 @@ void Game::Initialize() {
 //		m_window.get(),
 //		SDL_WINDOW_FULLSCREEN
 //	);
-
-	//init systems //TODO move systems creation to some system's controller
-	logModule::LoggerInstance::Init(logModule::LogManager::create());
 
 	m_isRunning = true;
 }
@@ -131,4 +132,6 @@ void Game::Destroy() {
 	m_renderer.reset(nullptr);
 	m_window.reset(nullptr);
 	SDL_Quit();
+	logModule::LogManagerInstance::GetInstance().Teardown();
+	logModule::LogManagerInstance::Cleanup();
 }

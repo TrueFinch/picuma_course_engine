@@ -8,7 +8,7 @@
 #include <SDL2/SDL.h>
 
 // TODO remove "engine/" prefix with cmake configuration somehow
-#include "engine/utilsModule/Types.h"
+#include "engine/utilsModule/types.h"
 
 namespace pce {
 

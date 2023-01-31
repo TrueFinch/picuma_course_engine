@@ -6,9 +6,10 @@
 
 #include <fmt/format.h>
 
-#include "logModule/LogObserver.h"
+#include "LogObserver.h"
+#include "SpdLogger.h"
 #include "utilsModule/SystemInstance.h"
-#include "utilsModule/Types.h"
+#include "utilsModule/types.h"
 
 namespace pce {
 	namespace logModule {
@@ -17,7 +18,7 @@ namespace pce {
 
 			static std::unique_ptr<LogManager> create();
 
-			~LogManager();
+			~LogManager() = default;
 
 			LogManager(const LogManager&) = delete;
 
@@ -33,19 +34,21 @@ namespace pce {
 
 			void UnregisterObserver(LogObserver& obs);
 
+			void Teardown();
 		protected:
 			LogManager() = default;
 
 		private:
 			std::unordered_map<uint32, std::reference_wrapper<LogObserver>> m_observers;
+			SpdLogger m_spdLogger;
 		};
 
-		class LoggerInstance final : public utilsModule::SystemInstance<LogManager> {};
+		class LogManagerInstance final : public utilsModule::SystemInstance<LogManager> {};
 	}
 
 	inline void log(pce::eLogLevel lvl, const std::string& msg) {
 		using namespace logModule;
-		const auto& logger = LoggerInstance::GetInstance();
+		const auto& logger = LogManagerInstance::GetInstance();
 		logger.Log(lvl, msg);
 	}
 
