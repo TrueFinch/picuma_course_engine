@@ -9,6 +9,7 @@ set(ENGINE_HEADERS
 	src/engine/logModule/LogManager.h
 	src/engine/utilsModule/SystemInstance.h
 	src/engine/ecsModule/ECS.h
+	src/engine/ecsModule/components/TransformComponent.h
 )
 
 set(ENGINE_SOURCES
