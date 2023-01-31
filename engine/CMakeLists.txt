@@ -8,13 +8,15 @@ set(ENGINE_HEADERS
 	src/engine/logModule/SpdLogger.h
 	src/engine/logModule/LogManager.h
 	src/engine/utilsModule/SystemInstance.h
+	src/engine/ecsModule/ECS.h
 )
 
 set(ENGINE_SOURCES
 	src/engine/coreModule/Game.cpp
 	src/engine/logModule/LogManager.cpp
 	src/engine/logModule/SpdLogger.cpp
-	)
+	src/engine/ecsModule/ECS.cpp
+)
 
 target_sources(${ENGINE_LIB}
 	PUBLIC ${ENGINE_HEADERS}
