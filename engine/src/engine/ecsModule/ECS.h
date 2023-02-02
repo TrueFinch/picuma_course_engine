@@ -94,6 +94,88 @@ namespace pce::ecs {
 		std::vector<std::weak_ptr<Entity>> m_entities;
 	};
 
+	class IPool {
+	public:
+		virtual ~IPool() = 0;
+	};
+
+	// TODO add check T is base of Component
+	template<typename T>
+	class Pool : public IPool {
+	public:
+		Pool(uint32 capacity) {
+			m_data.resize(capacity);
+		};
+
+		Pool(const Pool&) = delete;
+
+		Pool(Pool&&) = delete;
+
+		Pool& operator=(const Pool&) = delete;
+
+		Pool& operator=(Pool&&) = delete;
+
+		~Pool() override = default;
+
+		bool Empty() const {
+			return m_data.empty();
+		}
+
+		uint32 Size() const {
+			return m_size;
+		}
+
+		void Clear() {
+			m_data.clear();
+			m_entityIdToIndex.clear();
+			m_indexToEntityId.clear();
+			m_size = 0;
+		}
+
+		void Set(Entity::Id entityId, T component) {
+			if (m_entityIdToIndex.count(entityId)) {
+				const auto index = m_entityIdToIndex[entityId];
+				m_data[index] = component;
+			} else {
+				if (m_size >= m_data.capacity()) {
+					m_data.resize(m_size * 2);
+				}
+				const auto index = m_size;
+				m_entityIdToIndex.emplace(entityId, index);
+				m_indexToEntityId.emplace(index, entityId);
+				m_data[index] = component;
+				++m_size;
+			}
+		}
+
+		void Remove(Entity::Id entityId) {
+			if (!m_entityIdToIndex.count(entityId)) {
+				return;
+			}
+			const auto indexOfRemoved = m_entityIdToIndex[entityId];
+			const auto indexOfLast = m_size - 1;
+			m_data[indexOfRemoved] = m_data[indexOfLast];
+
+			const auto entityIdOfLastElement = m_indexToEntityId[indexOfLast];
+			m_entityIdToIndex[entityIdOfLastElement] = indexOfRemoved;
+			m_indexToEntityId[indexOfRemoved] = entityIdOfLastElement;
+
+			m_entityIdToIndex.erase(entityId);
+			m_indexToEntityId.erase(indexOfLast);
+
+			--m_size;
+		}
+
+		T& Get(Entity::Id entityId) const {
+			return m_data.at(m_entityIdToIndex.at(entityId));
+		}
+
+	private:
+		uint32 m_size = 0;
+		std::vector<T> m_data;
+		std::unordered_map<Entity::Id, uint32> m_entityIdToIndex;
+		std::unordered_map<uint32, Entity::Id> m_indexToEntityId;
+	};
 	class Registry {
 		// TODO implement
 	};
