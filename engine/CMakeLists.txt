@@ -36,20 +36,21 @@ find_package(fmt CONFIG REQUIRED)
 
 target_include_directories(${ENGINE_LIB}
 	PUBLIC ${PNG_INCLUDE_DIR}
+	PUBLIC ${fmt_INCLUDE_DIR}
 	PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/engine/
 )
 
 target_link_libraries(${ENGINE_LIB}
-	PRIVATE
+	PUBLIC
 	$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main> $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
 
-	PRIVATE
+	PUBLIC
 	$<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>
 
-	PRIVATE PNG::PNG
-	PRIVATE glm::glm
+	PUBLIC PNG::PNG
+	PUBLIC glm::glm
 
-	PRIVATE spdlog::spdlog_header_only
-	PRIVATE fmt::fmt-header-only
+	PUBLIC spdlog::spdlog_header_only
+	PUBLIC fmt::fmt-header-only
 )
