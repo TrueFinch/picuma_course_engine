@@ -88,8 +88,16 @@ public:
 };
 
 template<typename T, typename K>
-struct std::hash<pce::utilsModule::KeyId<T, K>> {
-	std::size_t operator()(pce::utilsModule::KeyId<T, K> const& keyId) const noexcept {
-		return std::hash<uint32>{}(uint32(keyId));
+class fmt::formatter<pce::utilsModule::KeyId<T, K>> : fmt::formatter<K> {
+public:
+	formatter <K> int_formatter;
+
+	constexpr auto parse(format_parse_context& ctx) {
+		return int_formatter.parse(ctx);
+	}
+
+	auto format(const pce::utilsModule::KeyId<T, K>& keyId, format_context& ctx) {
+		return int_formatter.format(static_cast<K>(keyId), ctx);
 	}
 };
+

@@ -8,14 +8,13 @@
 
 #include "LogObserver.h"
 #include "SpdLogger.h"
-#include "utilsModule/SystemInstance.h"
-#include "utilsModule/types.h"
+#include "engine/utilsModule/SystemInstance.h"
+#include "engine/utilsModule/types.h"
 
 namespace pce {
 	namespace logModule {
 		class LogManager final {
 		public:
-
 			static std::unique_ptr<LogManager> create();
 
 			~LogManager() = default;
@@ -35,6 +34,7 @@ namespace pce {
 			void UnregisterObserver(LogObserver& obs);
 
 			void Teardown();
+
 		protected:
 			LogManager() = default;
 

@@ -29,6 +29,8 @@ const Signature& System::GetComponentSignature() const {
 	return m_componentSignature;
 }
 
+IPool::~IPool() = default;
+
 Entity Registry::CreateEntity() {
 	auto entity = Entity();
 	if (!m_entitiesToComponentsSignatures.count(entity.GetId())) {

@@ -13,8 +13,10 @@
 #include <list>
 #include <type_traits>
 #include <typeindex>
+#include <fmt/format.h>
 
 #include "engine/utilsModule/KeyId.h"
+#include "engine/logModule/LogManager.h"
 
 namespace pce::ecs {
 	class IEntity {
@@ -199,13 +201,16 @@ namespace pce::ecs {
 
 			auto component = T(std::forward<Args>(args)...);
 
-			if (uint32(componentTypeId) > m_componentPools.size()) {
-				m_componentPools.emplace_back();
+			if (uint32(componentTypeId) >= m_componentPools.size()) {
+				m_componentPools.insert({ componentTypeId, std::make_shared<Pool<T>>() });
 			}
-			auto pool = std::static_pointer_cast<Pool<T>>(m_componentPools.at(uint32(componentTypeId)));
+			//TODO exception is here!!!
+			auto pool = std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentTypeId));
 			pool->Set(entityId, std::move(component));
 
 			m_entitiesToComponentsSignatures[entityId].set(uint32(componentTypeId));
+
+			pce::log("Component (id = {}) was added to entity (id = {})", componentTypeId, entityId);
 		}
 
 		template<typename T,
@@ -266,7 +271,7 @@ namespace pce::ecs {
 
 	private:
 		std::set<Entity> m_entityToAdd, m_entityToRemove;
-		std::vector<std::shared_ptr<IPool>> m_componentPools;
+		std::unordered_map<utilsModule::UniqueIdProvider<Component<void>>::Id, std::shared_ptr<IPool>> m_componentPools;
 		std::map<Entity::Id, Signature> m_entitiesToComponentsSignatures;
 		std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems;
 	};

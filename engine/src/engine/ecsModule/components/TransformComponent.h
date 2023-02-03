@@ -6,6 +6,8 @@
 
 #include <glm/vec2.hpp>
 
+#include "engine/ecsModule/ECS.h"
+
 namespace pce::ecs::components {
 	struct TransformComponent : ecs::Component<TransformComponent> {
 		glm::vec2 position;

@@ -6,8 +6,8 @@
 
 #include <spdlog/spdlog.h>
 
-#include "utilsModule/types.h"
-#include "logModule/LogObserver.h"
+#include "engine/utilsModule/types.h"
+#include "engine/logModule/LogObserver.h"
 
 namespace pce::logModule {
 	class SpdLogger final : public LogObserver {
