@@ -3,17 +3,23 @@ add_library(${ENGINE_LIB} STATIC)
 set(ENGINE_HEADERS
 	src/engine/coreModule/Game.h
 	src/engine/utilsModule/types.h
+	src/engine/utilsModule/KeyId.h
 	src/engine/logModule/LogObserver.h
 	src/engine/logModule/SpdLogger.h
 	src/engine/logModule/LogManager.h
 	src/engine/utilsModule/SystemInstance.h
+	src/engine/ecsModule/ECS.h
+	src/engine/ecsModule/components/TransformComponent.h
+	src/engine/ecsModule/systems/MovementSystem.h
 )
 
 set(ENGINE_SOURCES
 	src/engine/coreModule/Game.cpp
 	src/engine/logModule/LogManager.cpp
 	src/engine/logModule/SpdLogger.cpp
-	)
+	src/engine/ecsModule/ECS.cpp
+	src/engine/ecsModule/systems/MovementSystem.cpp
+)
 
 target_sources(${ENGINE_LIB}
 	PUBLIC ${ENGINE_HEADERS}
