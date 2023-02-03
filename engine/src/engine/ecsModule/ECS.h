@@ -181,7 +181,7 @@ namespace pce::ecs {
 	 */
 	class Registry { // TODO inherit from SystemInstance
 	public:
-		Registry() = default;
+		[[nodiscard]] static std::unique_ptr<Registry> Create();
 
 		[[nodiscard]] Entity CreateEntity();
 
@@ -204,7 +204,6 @@ namespace pce::ecs {
 			if (uint32(componentTypeId) >= m_componentPools.size()) {
 				m_componentPools.insert({ componentTypeId, std::make_shared<Pool<T>>() });
 			}
-			//TODO exception is here!!!
 			auto pool = std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentTypeId));
 			pool->Set(entityId, std::move(component));
 
@@ -268,11 +267,14 @@ namespace pce::ecs {
 		std::weak_ptr<T> GetSystem() const {
 			return std::weak_ptr<T>(m_systems.at(std::type_index(typeid(T))));
 		}
-
+	protected:
+		Registry() = default;
 	private:
 		std::set<Entity> m_entityToAdd, m_entityToRemove;
 		std::unordered_map<utilsModule::UniqueIdProvider<Component<void>>::Id, std::shared_ptr<IPool>> m_componentPools;
 		std::map<Entity::Id, Signature> m_entitiesToComponentsSignatures;
 		std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems;
 	};
+
+	class RegistryInstance final : public utilsModule::Instance<Registry> {};
 }

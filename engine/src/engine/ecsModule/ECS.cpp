@@ -31,6 +31,10 @@ const Signature& System::GetComponentSignature() const {
 
 IPool::~IPool() = default;
 
+std::unique_ptr<Registry> Registry::Create() {
+	return std::unique_ptr<Registry>(new Registry());
+}
+
 Entity Registry::CreateEntity() {
 	auto entity = Entity();
 	if (!m_entitiesToComponentsSignatures.count(entity.GetId())) {

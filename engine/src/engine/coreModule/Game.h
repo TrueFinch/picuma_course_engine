@@ -46,8 +46,6 @@ namespace pce {
 		//
 		std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> m_window;
 		std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> m_renderer;
-		//
-		std::unique_ptr<ecs::Registry> m_registry;
 	};
 
 } // pce
