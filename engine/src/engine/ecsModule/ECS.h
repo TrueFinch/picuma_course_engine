@@ -8,11 +8,27 @@
 #include <memory>
 #include <bitset>
 #include <unordered_map>
+#include <map>
+#include <set>
+#include <list>
+#include <type_traits>
+#include <typeindex>
 
 #include "utilsModule/KeyId.h"
 
 namespace pce::ecs {
-	class Entity : public utilsModule::UniqueIdProvider<Entity> {
+	class IEntity {
+	public:
+		virtual ~IEntity() = 0;
+
+		virtual void Setup() {};
+
+		virtual void Update(float deltaTime) {};
+
+		virtual void Teardown() {};
+	};
+
+	class Entity : public IEntity, public utilsModule::UniqueIdProvider<Entity> {
 	public:
 		explicit Entity() = default;
 
@@ -28,39 +44,24 @@ namespace pce::ecs {
 
 		Entity& operator=(Entity&&) noexcept = default;
 
-		bool operator==(const Entity& other) noexcept { return GetId() == other.GetId(); }
+		bool operator==(const Entity& other) const noexcept { return GetId() == other.GetId(); }
 
-		bool operator!=(const Entity& other) noexcept { return GetId() != other.GetId(); }
+		bool operator!=(const Entity& other) const noexcept { return GetId() != other.GetId(); }
 
-		bool operator<(const Entity& other) noexcept { return GetId() < other.GetId(); }
+		bool operator<(const Entity& other) const noexcept { return GetId() < other.GetId(); }
 
-		bool operator>(const Entity& other) noexcept { return GetId() > other.GetId(); }
-
-		virtual void Setup() {};
-
-		virtual void Update(float deltaTime) {};
-
-		virtual void Teardown() {};
+		bool operator>(const Entity& other) const noexcept { return GetId() > other.GetId(); }
 	};
 
 	const uint32 MAX_COMPONENTS = 32;
 	typedef std::bitset<MAX_COMPONENTS> Signature;
 
-	//TODO make class abstract
-	class IComponent : public utilsModule::UniqueIdProvider<IComponent> {};
-
 	template<typename T>
-	class Component : public utilsModule::UniqueIdProvider<Component<T>> {
+	class Component {
 	public:
-		using TypeId = utilsModule::UniqueIdProvider<IComponent>::Id;
-		using ObjId = typename utilsModule::UniqueIdProvider<Component<T>>::Id;
-
-		[[nodiscard]] TypeId GetTypeId() const noexcept {
-			return utilsModule::UniqueIdProvider<IComponent>::GetId();
-		}
-
-		[[nodiscard]] ObjId GetId() const noexcept {
-			return utilsModule::UniqueIdProvider<IComponent>::GetId();
+		[[nodiscard]] static utilsModule::UniqueIdProvider<Component<void>>::Id GetTypeId() noexcept {
+			static utilsModule::UniqueIdProvider<Component<void>>::Id id = utilsModule::UniqueIdProvider<Component<void>>::GenerateId();
+			return id;
 		}
 	};
 
@@ -68,30 +69,30 @@ namespace pce::ecs {
 	 * System is an entity that manages other entities
 	 * that has specific associated components
 	 */
-	class System : public Entity {
+	class System {
 	public:
 		System() = default;
 
-		~System() override = default;
+		virtual void Update(float deltaTime) = 0;
 
-		void AddEntity(std::weak_ptr<Entity> entity);
+		void AddEntity(const Entity& entity);
 
-		void RemoveEntity(std::weak_ptr<Entity> entity);
+		void RemoveEntity(const Entity& entity);
 
-		[[nodiscard]] std::vector<std::weak_ptr<Entity>> GetEntities() const;
+		[[nodiscard]] std::vector<Entity> GetEntities() const;
 
 		[[nodiscard]] const Signature& GetComponentSignature() const;
 
-		template<typename T>
+		template<typename TComponent,
+				typename = std::enable_if_t<std::is_base_of_v<Component<TComponent>, TComponent>>>
 		void RequireComponent() {
-			const auto id = Component<T>::GetTypeId();
+			const auto id = Component<TComponent>::GetTypeId();
 			m_componentSignature.set(id);
 		}
 
 	private:
 		Signature m_componentSignature;
-
-		std::vector<std::weak_ptr<Entity>> m_entities;
+		std::vector<Entity> m_entities;
 	};
 
 	class IPool {
@@ -176,7 +177,102 @@ namespace pce::ecs {
 		std::unordered_map<Entity::Id, uint32> m_entityIdToIndex;
 		std::unordered_map<uint32, Entity::Id> m_indexToEntityId;
 	};
-	class Registry {
-		// TODO implement
+
+	/***
+	 * The Registry manages the creation and destruction of both entities
+	 * and components and adding systems
+	 */
+	class Registry { // TODO inherit from SystemInstance
+	public:
+		Registry() = default;
+
+		[[nodiscard]] Entity createEntity();
+
+		void RemoveEntity(Entity entity);
+
+		void Update();
+
+		void AddEntityToSystem(const Entity& entity);
+
+		void RemoveEntityToSystem(const Entity& entity);
+
+		template<typename T, typename... Args,
+				typename = std::enable_if_t<std::is_base_of_v<Component<T>, T>>>
+		void AddComponent(const Entity& entity, Args&& ... args) {
+			const auto entityId = entity.GetId();
+			const auto componentTypeId = Component<T>::GetTypeId();
+
+			auto component = T(std::forward<Args>(args)...);
+
+			if (componentTypeId > m_componentPools.size()) {
+				m_componentPools.push_back(std::make_unique<Pool<T>()>());
+			}
+			auto pool = std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentTypeId));
+			pool->Set(entityId, std::move(component));
+
+			m_entitiesToComponentsSignatures[entityId].set(componentTypeId);
+		}
+
+		template<typename T,
+				typename = std::enable_if_t<std::is_base_of_v<Component<T>, T>>>
+		void RemoveComponent(const Entity& entity) {
+			const auto entityId = entity.GetId();
+			const auto componentTypeId = Component<T>::GetTypeId();
+
+			auto pool = std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentTypeId));
+			pool->Remove(entityId);
+
+			m_entitiesToComponentsSignatures[entityId].set(componentTypeId, false);
+		};
+
+		template<typename T,
+				typename = std::enable_if_t<std::is_base_of_v<Component<T>, T>>>
+		[[nodiscard]] bool HasComponent(const Entity& entity) const {
+			const auto entityId = entity.GetId();
+			const auto componentTypeId = Component<T>::GetTypeId();
+			return m_entitiesToComponentsSignatures.at(entityId).test(componentTypeId);
+		}
+
+		template<typename T,
+				typename = std::enable_if_t<std::is_base_of_v<Component<T>, T>>>
+		T& GetComponent(const Entity& entity) const {
+			const auto entityId = entity.GetId();
+			const auto componentTypeId = Component<T>::GetTypeId();
+			auto pool = std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentTypeId));
+			return pool->Get(entityId);
+		}
+
+		template<typename T, typename... Args,
+				typename = std::enable_if_t<std::is_base_of_v<System, T>>>
+		void AddSystem(Args&& ... args) {
+			m_systems.insert(std::type_index(typeid(T)), std::make_shared<T>(std::forward<Args>(args)...));
+		}
+
+		template<typename T, typename... Args,
+				typename = std::enable_if_t<std::is_base_of_v<System, T>>>
+		void RemoveSystem() {
+			if (!m_systems.count(std::type_index(typeid(T)))) {
+				return;
+			}
+			m_systems.erase(std::type_index(typeid(T)));
+		}
+
+		template<typename T, typename... Args,
+				typename = std::enable_if_t<std::is_base_of_v<System, T>>>
+		[[nodiscard]] bool HasSystem() {
+			return m_systems.count(std::type_index(typeid(T)));
+		}
+
+		template<typename T, typename... Args,
+				typename = std::enable_if_t<std::is_base_of_v<System, T>>>
+		std::weak_ptr<T> GetSystem() const {
+			return std::weak_ptr<T>(m_systems.at(std::type_index(typeid(T))));
+		}
+
+	private:
+		std::set<Entity> m_entityToAdd, m_entityToRemove;
+		std::vector<std::shared_ptr<IPool>> m_componentPools;
+		std::map<Entity::Id, Signature> m_entitiesToComponentsSignatures;
+		std::unordered_map<std::type_index, std::shared_ptr<System>> m_systems;
 	};
 }
