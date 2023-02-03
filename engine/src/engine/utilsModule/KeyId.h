@@ -13,6 +13,7 @@ namespace pce::utilsModule {
 		friend T;
 	public:
 		using type = K;
+
 		explicit KeyId(K id) noexcept: m_id(id) {}
 
 		explicit operator K() const noexcept {
@@ -63,7 +64,7 @@ namespace pce::utilsModule {
 		[[nodiscard]] virtual Id GetId() const noexcept {
 			return m_id;
 		}
-	protected:
+
 		[[nodiscard]] static Id GenerateId() noexcept {
 //			if (K has ++ operator){
 			return Id(m_current++);
