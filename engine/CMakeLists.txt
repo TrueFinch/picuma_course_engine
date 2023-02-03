@@ -7,7 +7,7 @@ set(ENGINE_HEADERS
 	src/engine/logModule/LogObserver.h
 	src/engine/logModule/SpdLogger.h
 	src/engine/logModule/LogManager.h
-	src/engine/utilsModule/SystemInstance.h
+	src/engine/utilsModule/Instance.h
 	src/engine/ecsModule/ECS.h
 	src/engine/ecsModule/components/TransformComponent.h
 	src/engine/ecsModule/components/RigidbodyComponent.h

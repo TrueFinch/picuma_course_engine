@@ -8,9 +8,9 @@
 
 namespace pce::utilsModule {
 	template<typename T>
-	class SystemInstance {
+	class Instance {
 	public:
-		SystemInstance() = delete;
+		Instance() = delete;
 
 		static T& GetInstance() {
 			return *m_instance;

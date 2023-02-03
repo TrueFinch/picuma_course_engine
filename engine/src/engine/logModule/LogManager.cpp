@@ -7,7 +7,7 @@
 using namespace pce::logModule;
 using namespace pce::utilsModule;
 
-std::unique_ptr<LogManager> LogManager::create() {
+std::unique_ptr<LogManager> LogManager::Create() {
 	auto logManager = std::unique_ptr<LogManager>(new LogManager());
 	// TODO create and register spdlog console
 	logManager->RegisterObserver(logManager->m_spdLogger);

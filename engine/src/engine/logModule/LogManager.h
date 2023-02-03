@@ -8,14 +8,14 @@
 
 #include "LogObserver.h"
 #include "SpdLogger.h"
-#include "engine/utilsModule/SystemInstance.h"
+#include "engine/utilsModule/Instance.h"
 #include "engine/utilsModule/types.h"
 
 namespace pce {
 	namespace logModule {
 		class LogManager final {
 		public:
-			static std::unique_ptr<LogManager> create();
+			static std::unique_ptr<LogManager> Create();
 
 			~LogManager() = default;
 
@@ -43,7 +43,7 @@ namespace pce {
 			SpdLogger m_spdLogger;
 		};
 
-		class LogManagerInstance final : public utilsModule::SystemInstance<LogManager> {};
+		class LogManagerInstance final : public utilsModule::Instance<LogManager> {};
 	}
 
 	inline void log(pce::eLogLevel lvl, const std::string& msg) {
