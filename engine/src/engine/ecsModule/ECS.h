@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <typeindex>
 
-#include "utilsModule/KeyId.h"
+#include "engine/utilsModule/KeyId.h"
 
 namespace pce::ecs {
 	class IEntity {

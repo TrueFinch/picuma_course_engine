@@ -9,9 +9,9 @@
 
 // TODO remove "engine/" prefix with cmake configuration somehow
 #include "engine/utilsModule/types.h"
+#include "engine/ecsModule/ECS.h"
 
 namespace pce {
-
 
 	class Game final {
 	public:
@@ -26,6 +26,8 @@ namespace pce {
 		void Destroy();
 
 	private:
+		void Setup();
+
 		void ProcessInput();
 
 		void Delay() const;
@@ -44,6 +46,8 @@ namespace pce {
 		//
 		std::unique_ptr<SDL_Window, decltype(&SDL_DestroyWindow)> m_window;
 		std::unique_ptr<SDL_Renderer, decltype(&SDL_DestroyRenderer)> m_renderer;
+		//
+		std::unique_ptr<ecs::Registry> m_registry;
 	};
 
 } // pce

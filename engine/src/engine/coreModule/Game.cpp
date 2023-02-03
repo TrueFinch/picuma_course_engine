@@ -9,6 +9,8 @@
 
 #include "Game.h"
 #include "logModule/LogManager.h"
+#include "ecsModule/ECS.h"
+#include "ecsModule/components/TransformComponent.h"
 
 using namespace pce;
 
@@ -16,6 +18,7 @@ using namespace pce;
 int width = 1280, height = 800;
 
 Game::Game() : m_window(nullptr, SDL_DestroyWindow), m_renderer(nullptr, SDL_DestroyRenderer) {
+	m_registry = std::make_unique<ecs::Registry>();
 }
 
 void Game::Initialize() {
@@ -60,12 +63,19 @@ void Game::Initialize() {
 }
 
 void Game::Run() {
+	Setup();
 	while (m_isRunning) {
 		ProcessInput();
 		Delay();
 		Update();
 		Render();
 	}
+}
+
+void Game::Setup() {
+	auto tank = m_registry->CreateEntity();
+	m_registry->AddComponent<ecs::components::TransformComponent>(tank, glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
+
 }
 
 void Game::ProcessInput() {
