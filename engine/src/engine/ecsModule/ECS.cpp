@@ -9,6 +9,8 @@
 using namespace pce::ecs;
 using namespace pce::utilsModule;
 
+IEntity::~IEntity() = default;
+
 void System::AddEntity(const Entity& entity) {
 	m_entities.emplace_back(entity);
 }
@@ -27,9 +29,11 @@ const Signature& System::GetComponentSignature() const {
 	return m_componentSignature;
 }
 
-Entity Registry::createEntity() {
+Entity Registry::CreateEntity() {
 	auto entity = Entity();
-	m_entitiesToComponentsSignatures[entity.GetId()] = Signature();
+	if (!m_entitiesToComponentsSignatures.count(entity.GetId())) {
+		m_entitiesToComponentsSignatures[entity.GetId()] = Signature();
+	}
 	m_entityToAdd.insert(entity);
 	return entity;
 }
@@ -39,7 +43,17 @@ void Registry::RemoveEntity(Entity entity) {
 }
 
 void Registry::Update() {
+	for (auto& entity : m_entityToAdd) {
+		AddEntityToSystem(entity);
+	}
+	m_entityToAdd.clear();
 
+
+
+	for (auto& entity : m_entityToRemove) {
+		RemoveEntityToSystem(entity);
+	}
+	m_entityToRemove.clear();
 }
 
 void Registry::AddEntityToSystem(const Entity& entity) {

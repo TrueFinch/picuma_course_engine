@@ -181,7 +181,7 @@ namespace pce::ecs {
 	public:
 		Registry() = default;
 
-		[[nodiscard]] Entity createEntity();
+		[[nodiscard]] Entity CreateEntity();
 
 		void RemoveEntity(Entity entity);
 
@@ -199,13 +199,13 @@ namespace pce::ecs {
 
 			auto component = T(std::forward<Args>(args)...);
 
-			if (componentTypeId > m_componentPools.size()) {
-				m_componentPools.push_back(std::make_unique<Pool<T>()>());
+			if (uint32(componentTypeId) > m_componentPools.size()) {
+				m_componentPools.emplace_back();
 			}
-			auto pool = std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentTypeId));
+			auto pool = std::static_pointer_cast<Pool<T>>(m_componentPools.at(uint32(componentTypeId)));
 			pool->Set(entityId, std::move(component));
 
-			m_entitiesToComponentsSignatures[entityId].set(componentTypeId);
+			m_entitiesToComponentsSignatures[entityId].set(uint32(componentTypeId));
 		}
 
 		template<typename T,

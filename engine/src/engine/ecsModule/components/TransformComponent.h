@@ -7,7 +7,7 @@
 #include <glm/vec2.hpp>
 
 namespace pce::ecs::components {
-	struct TransformComponent {
+	struct TransformComponent : ecs::Component<TransformComponent> {
 		glm::vec2 position;
 		glm::vec2 scale;
 		float rotation;
