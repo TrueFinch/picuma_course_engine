@@ -18,7 +18,7 @@
 #include "engine/utilsModule/KeyId.h"
 #include "engine/logModule/LogManager.h"
 
-namespace pce::ecs {
+namespace pce::ecsModule {
 	class IEntity {
 	public:
 		virtual ~IEntity() = 0;

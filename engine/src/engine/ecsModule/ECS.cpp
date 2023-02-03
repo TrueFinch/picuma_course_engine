@@ -6,7 +6,7 @@
 
 #include "ECS.h"
 
-using namespace pce::ecs;
+using namespace pce::ecsModule;
 using namespace pce::utilsModule;
 
 IEntity::~IEntity() = default;

@@ -23,7 +23,7 @@ Game::Game() : m_window(nullptr, SDL_DestroyWindow), m_renderer(nullptr, SDL_Des
 void Game::Initialize() {
 	//init systems //TODO move systems creation to some system's controller
 	logModule::LogManagerInstance::Init(logModule::LogManager::Create());
-	ecs::RegistryInstance::Init(ecs::Registry::Create());
+	ecsModule::RegistryInstance::Init(ecsModule::Registry::Create());
 
 	pce::log("Start game initializing");
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -73,8 +73,8 @@ void Game::Run() {
 }
 
 void Game::Setup() {
-	auto tank = ecs::RegistryInstance::GetInstance().CreateEntity();
-	ecs::RegistryInstance::GetInstance().AddComponent<ecs::components::TransformComponent>(tank, glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
+	auto tank = ecsModule::RegistryInstance::GetInstance().CreateEntity();
+	ecsModule::RegistryInstance::GetInstance().AddComponent<ecsModule::components::TransformComponent>(tank, glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
 
 }
 

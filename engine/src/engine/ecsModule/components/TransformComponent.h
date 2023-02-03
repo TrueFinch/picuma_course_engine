@@ -8,8 +8,8 @@
 
 #include "engine/ecsModule/ECS.h"
 
-namespace pce::ecs::components {
-	struct TransformComponent : ecs::Component<TransformComponent> {
+namespace pce::ecsModule::components {
+	struct TransformComponent : ecsModule::Component<TransformComponent> {
 		glm::vec2 position;
 		glm::vec2 scale;
 		float rotation;

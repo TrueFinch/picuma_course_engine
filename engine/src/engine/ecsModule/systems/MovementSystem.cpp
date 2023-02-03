@@ -4,7 +4,7 @@
 
 #include "MovementSystem.h"
 
-namespace ecs = pce::ecs;
+namespace ecs = pce::ecsModule;
 using namespace ecs::systems;
 
 MovementSystem::MovementSystem() {

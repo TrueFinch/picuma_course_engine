@@ -8,8 +8,8 @@
 
 #include "engine/ecsModule/ECS.h"
 
-namespace pce::ecs::components {
-	struct RigidbodyComponent : ecs::Component<RigidbodyComponent> {
+namespace pce::ecsModule::components {
+	struct RigidbodyComponent : ecsModule::Component<RigidbodyComponent> {
 		glm::vec2 velocity;
 		// TODO : think about adding weight and some gravitation system to engine?
 

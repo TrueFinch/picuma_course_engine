@@ -7,7 +7,7 @@
 
 #include "engine/ecsModule/ECS.h"
 
-namespace pce::ecs::systems {
+namespace pce::ecsModule::systems {
 	class MovementSystem final: public System {
 	public:
 		explicit MovementSystem();
