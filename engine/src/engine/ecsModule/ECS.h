@@ -53,6 +53,18 @@ namespace pce::ecsModule {
 		bool operator<(const Entity& other) const noexcept { return GetId() < other.GetId(); }
 
 		bool operator>(const Entity& other) const noexcept { return GetId() > other.GetId(); }
+
+		template<typename T, typename... Args>
+		void AddComponent(Args&& ... args);
+
+		template<typename T>
+		void RemoveComponent();
+
+		template<typename T>
+		[[nodiscard]] bool HasComponent() const;
+
+		template<typename T>
+		T& GetComponent() const;
 	};
 
 	const uint32 MAX_COMPONENTS = 32;
@@ -277,4 +289,26 @@ namespace pce::ecsModule {
 	};
 
 	class RegistryInstance final : public utilsModule::Instance<Registry> {};
+
+
+
+	template<typename T, typename... Args>
+	void Entity::AddComponent(Args&& ... args) {
+		RegistryInstance::GetInstance().AddComponent<T>(*this, std::forward<Args>(args)...);
+	}
+
+	template<typename T>
+	void Entity::RemoveComponent() {
+		RegistryInstance::GetInstance().RemoveComponent<T>(*this);
+	}
+
+	template<typename T>
+	bool Entity::HasComponent() const {
+		return RegistryInstance::GetInstance().HasComponent<T>(*this);
+	}
+
+	template<typename T>
+	T& Entity::GetComponent() const {
+		return RegistryInstance::GetInstance().GetComponent<T>(*this);
+	}
 }

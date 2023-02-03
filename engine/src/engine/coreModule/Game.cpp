@@ -74,7 +74,7 @@ void Game::Run() {
 
 void Game::Setup() {
 	auto tank = ecsModule::RegistryInstance::GetInstance().CreateEntity();
-	ecsModule::RegistryInstance::GetInstance().AddComponent<ecsModule::components::TransformComponent>(tank, glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
+	tank.AddComponent<ecsModule::components::TransformComponent>(glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
 
 }
 
