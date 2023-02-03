@@ -104,9 +104,7 @@ namespace pce::ecs {
 	template<typename T>
 	class Pool : public IPool {
 	public:
-		Pool(uint32 capacity) {
-			m_data.resize(capacity);
-		};
+		Pool() = default;
 
 		Pool(const Pool&) = delete;
 
@@ -138,13 +136,10 @@ namespace pce::ecs {
 				const auto index = m_entityIdToIndex[entityId];
 				m_data[index] = component;
 			} else {
-				if (m_size >= m_data.capacity()) {
-					m_data.resize(m_size * 2);
-				}
 				const auto index = m_size;
 				m_entityIdToIndex.emplace(entityId, index);
 				m_indexToEntityId.emplace(index, entityId);
-				m_data[index] = component;
+				m_data.push_back(component);
 				++m_size;
 			}
 		}
