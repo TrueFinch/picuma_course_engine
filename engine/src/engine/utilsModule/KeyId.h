@@ -78,3 +78,18 @@ namespace pce::utilsModule {
 		Id m_id;
 	};
 }
+
+template<typename T, typename K>
+class std::hash<pce::utilsModule::KeyId<T, K>> {
+public:
+	size_t operator()(const pce::utilsModule::KeyId<T, K>& keyId) const {
+		return static_cast<K>(keyId);
+	}
+};
+
+template<typename T, typename K>
+struct std::hash<pce::utilsModule::KeyId<T, K>> {
+	std::size_t operator()(pce::utilsModule::KeyId<T, K> const& keyId) const noexcept {
+		return std::hash<uint32>{}(uint32(keyId));
+	}
+};
