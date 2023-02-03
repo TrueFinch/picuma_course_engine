@@ -10,6 +10,7 @@ set(ENGINE_HEADERS
 	src/engine/utilsModule/SystemInstance.h
 	src/engine/ecsModule/ECS.h
 	src/engine/ecsModule/components/TransformComponent.h
+	src/engine/ecsModule/components/RigidbodyComponent.h
 	src/engine/ecsModule/systems/MovementSystem.h
 )
 

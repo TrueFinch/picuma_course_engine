@@ -14,7 +14,7 @@ namespace pce::ecs::components {
 		glm::vec2 scale;
 		float rotation;
 
-		TransformComponent(glm::vec2 position, glm::vec2 scale, float rotation)
+		explicit TransformComponent(glm::vec2 position, glm::vec2 scale, float rotation)
 				: position(position), scale(scale), rotation(rotation) {};
 		// TODO should I add here anchor and pivot points data?
 	};
