@@ -87,7 +87,11 @@ namespace pce::ecsModule {
 	public:
 		System() = default;
 
+		virtual void Setup() = 0;
+
 		virtual void Update(float deltaTime) = 0;
+
+		virtual void Teardown() = 0;
 
 		void AddEntity(const Entity& entity);
 
@@ -101,7 +105,7 @@ namespace pce::ecsModule {
 				typename = std::enable_if_t<std::is_base_of_v<Component<TComponent>, TComponent>>>
 		void RequireComponent() {
 			const auto id = Component<TComponent>::GetTypeId();
-			m_componentSignature.set(id);
+			m_componentSignature.set(utilsModule::UniqueIdProvider<Component<void>>::Id::type(id));
 		}
 
 	private:
@@ -176,7 +180,7 @@ namespace pce::ecsModule {
 			--m_size;
 		}
 
-		T& Get(Entity::Id entityId) const {
+		T& Get(Entity::Id entityId) {
 			return m_data.at(m_entityIdToIndex.at(entityId));
 		}
 
@@ -199,7 +203,7 @@ namespace pce::ecsModule {
 
 		void RemoveEntity(Entity entity);
 
-		void Update();
+		void Update(float deltaTime);
 
 		void AddEntityToSystem(const Entity& entity);
 
@@ -256,11 +260,15 @@ namespace pce::ecsModule {
 		template<typename T, typename... Args,
 				typename = std::enable_if_t<std::is_base_of_v<System, T>>>
 		void AddSystem(Args&& ... args) {
-			m_systems.insert(std::type_index(typeid(T)), std::make_shared<T>(std::forward<Args>(args)...));
+			if (m_systems.count(std::type_index(typeid(T)))) {
+				// TODO add ability to print pretty names of types (for now it's ugly)
+				pce::logWarning("[Registry::AddSystem] System {} is already added. Break!", typeid(T).name());
+				return;
+			}
+			m_systems.insert({ std::type_index(typeid(T)), std::make_shared<T>(std::forward<Args>(args)...) });
 		}
 
-		template<typename T, typename... Args,
-				typename = std::enable_if_t<std::is_base_of_v<System, T>>>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<System, T>>>
 		void RemoveSystem() {
 			if (!m_systems.count(std::type_index(typeid(T)))) {
 				return;
@@ -268,19 +276,20 @@ namespace pce::ecsModule {
 			m_systems.erase(std::type_index(typeid(T)));
 		}
 
-		template<typename T, typename... Args,
-				typename = std::enable_if_t<std::is_base_of_v<System, T>>>
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<System, T>>>
 		[[nodiscard]] bool HasSystem() {
 			return m_systems.count(std::type_index(typeid(T)));
 		}
 
-		template<typename T, typename... Args,
-				typename = std::enable_if_t<std::is_base_of_v<System, T>>>
-		std::weak_ptr<T> GetSystem() const {
-			return std::weak_ptr<T>(m_systems.at(std::type_index(typeid(T))));
+		template<typename T, typename = std::enable_if_t<std::is_base_of_v<System, T>>>
+		std::weak_ptr<T> GetSystem() {
+			auto system = std::static_pointer_cast<T>(m_systems.at(std::type_index(typeid(T))));
+			return std::weak_ptr<T>(system);
 		}
+
 	protected:
 		Registry() = default;
+
 	private:
 		std::set<Entity> m_entityToAdd, m_entityToRemove;
 		std::unordered_map<utilsModule::UniqueIdProvider<Component<void>>::Id, std::shared_ptr<IPool>> m_componentPools;
@@ -289,7 +298,6 @@ namespace pce::ecsModule {
 	};
 
 	class RegistryInstance final : public utilsModule::Instance<Registry> {};
-
 
 
 	template<typename T, typename... Args>

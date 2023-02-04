@@ -11,6 +11,9 @@
 #include "logModule/LogManager.h"
 #include "ecsModule/ECS.h"
 #include "ecsModule/components/TransformComponent.h"
+#include "ecsModule/components/RigidbodyComponent.h"
+#include "ecsModule/systems/MovementSystem.h"
+#include "ecsModule/systems/RenderSystem.h"
 
 using namespace pce;
 
@@ -73,9 +76,12 @@ void Game::Run() {
 }
 
 void Game::Setup() {
+	// create ECS systems
+	ecsModule::RegistryInstance::GetInstance().AddSystem<ecsModule::systems::MovementSystem>();
+
 	auto tank = ecsModule::RegistryInstance::GetInstance().CreateEntity();
 	tank.AddComponent<ecsModule::components::TransformComponent>(glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
-
+	tank.AddComponent<ecsModule::components::RigidbodyComponent>(glm::vec2(50.f, 10.f));
 }
 
 void Game::ProcessInput() {
@@ -108,6 +114,14 @@ void Game::Delay() const {
 void Game::Update() {
 	m_deltaTime = static_cast<float>(SDL_GetTicks() - m_prevFrameMillis) / 1000.f;
 	m_prevFrameMillis = SDL_GetTicks();
+
+	auto& registry = ecsModule::RegistryInstance::GetInstance();
+
+	// TODO: add other systems here
+	// TODO: need something like system update order that can be changeable without re-compile
+	registry.GetSystem<ecsModule::systems::MovementSystem>().lock()->Update(m_deltaTime);
+
+	registry.Update(m_deltaTime);
 }
 
 glm::vec2 tank_pos = { 0, 0 };

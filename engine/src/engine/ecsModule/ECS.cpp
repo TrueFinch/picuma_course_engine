@@ -48,7 +48,7 @@ void Registry::RemoveEntity(Entity entity) {
 	m_entityToRemove.insert(entity);
 }
 
-void Registry::Update() {
+void Registry::Update(float deltaTime) {
 	for (auto& entity : m_entityToAdd) {
 		AddEntityToSystem(entity);
 	}

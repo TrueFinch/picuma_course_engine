@@ -8,9 +8,14 @@
 #include "engine/ecsModule/ECS.h"
 
 namespace pce::ecsModule::systems {
-	class MovementSystem final: public System {
+	class MovementSystem final : public System {
 	public:
 		explicit MovementSystem();
+
+		void Setup() override;
+
 		void Update(float deltaTime) override;
+
+		void Teardown() override {}
 	};
 }
