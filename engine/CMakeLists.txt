@@ -13,6 +13,7 @@ set(ENGINE_HEADERS
 	src/engine/ecsModule/components/RigidbodyComponent.h
 	src/engine/ecsModule/components/SpriteComponent.h
 	src/engine/ecsModule/systems/MovementSystem.h
+	src/engine/ecsModule/systems/RenderSystem.h
 )
 
 set(ENGINE_SOURCES
@@ -21,6 +22,7 @@ set(ENGINE_SOURCES
 	src/engine/logModule/SpdLogger.cpp
 	src/engine/ecsModule/ECS.cpp
 	src/engine/ecsModule/systems/MovementSystem.cpp
+	src/engine/ecsModule/systems/RenderSystem.cpp
 )
 
 target_sources(${ENGINE_LIB}

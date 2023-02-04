@@ -62,11 +62,11 @@ void Game::Initialize() {
 //		SDL_WINDOW_FULLSCREEN
 //	);
 
+	Setup();
 	m_isRunning = true;
 }
 
 void Game::Run() {
-	Setup();
 	while (m_isRunning) {
 		ProcessInput();
 		Delay();
@@ -77,9 +77,13 @@ void Game::Run() {
 
 void Game::Setup() {
 	// create ECS systems
-	ecsModule::RegistryInstance::GetInstance().AddSystem<ecsModule::systems::MovementSystem>();
+	auto& registry = ecsModule::RegistryInstance::GetInstance();
 
-	auto tank = ecsModule::RegistryInstance::GetInstance().CreateEntity();
+	registry.AddSystem<ecsModule::systems::MovementSystem>();
+	registry.AddSystem<ecsModule::systems::RenderSystem>();
+	registry.GetSystem<ecsModule::systems::RenderSystem>().lock()->SetRenderer(m_renderer.get());
+
+	auto tank = registry.CreateEntity();
 	tank.AddComponent<ecsModule::components::TransformComponent>(glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
 	tank.AddComponent<ecsModule::components::RigidbodyComponent>(glm::vec2(50.f, 10.f));
 }
@@ -117,11 +121,11 @@ void Game::Update() {
 
 	auto& registry = ecsModule::RegistryInstance::GetInstance();
 
+	registry.Update(m_deltaTime);
+
 	// TODO: add other systems here
 	// TODO: need something like system update order that can be changeable without re-compile
 	registry.GetSystem<ecsModule::systems::MovementSystem>().lock()->Update(m_deltaTime);
-
-	registry.Update(m_deltaTime);
 }
 
 glm::vec2 tank_pos = { 0, 0 };
@@ -130,18 +134,8 @@ void Game::Render() {
 	SDL_SetRenderDrawColor(m_renderer.get(), 100, 100, 100, 255);
 	SDL_RenderClear(m_renderer.get());
 
-	SDL_Surface *s = IMG_Load("../assets/images/tank-tiger-right.png");
-	if (!s) {
-		pce::logError("{}", SDL_GetError());
-	}
-	SDL_Texture *t = SDL_CreateTextureFromSurface(m_renderer.get(), s);
-	SDL_FreeSurface(s);
-
-	SDL_Rect dstRect = {
-			static_cast<int32>(tank_pos.x), static_cast<int32>(tank_pos.y), 32, 32 };
-	tank_pos += glm::vec2{ 100, 0 } * m_deltaTime;
-	SDL_RenderCopy(m_renderer.get(), t, nullptr, &dstRect);
-	SDL_DestroyTexture(t);
+	auto& registry = ecsModule::RegistryInstance::GetInstance();
+	registry.GetSystem<ecsModule::systems::RenderSystem>().lock()->Update(m_deltaTime);
 
 	//TODO
 	int w, h;
