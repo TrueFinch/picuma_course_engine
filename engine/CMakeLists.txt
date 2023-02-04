@@ -14,6 +14,7 @@ set(ENGINE_HEADERS
 	src/engine/ecsModule/components/SpriteComponent.h
 	src/engine/ecsModule/systems/MovementSystem.h
 	src/engine/ecsModule/systems/RenderSystem.h
+	src/engine/resourceModule/ResourceManager.h
 )
 
 set(ENGINE_SOURCES
@@ -23,7 +24,8 @@ set(ENGINE_SOURCES
 	src/engine/ecsModule/ECS.cpp
 	src/engine/ecsModule/systems/MovementSystem.cpp
 	src/engine/ecsModule/systems/RenderSystem.cpp
-)
+	src/engine/resourceModule/ResourceManager.cpp
+	)
 
 target_sources(${ENGINE_LIB}
 	PUBLIC ${ENGINE_HEADERS}

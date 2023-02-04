@@ -14,6 +14,7 @@
 #include "ecsModule/components/RigidbodyComponent.h"
 #include "ecsModule/systems/MovementSystem.h"
 #include "ecsModule/systems/RenderSystem.h"
+#include "resourceModule/ResourceManager.h"
 
 using namespace pce;
 
@@ -26,7 +27,6 @@ Game::Game() : m_window(nullptr, SDL_DestroyWindow), m_renderer(nullptr, SDL_Des
 void Game::Initialize() {
 	//init systems //TODO move systems creation to some system's controller
 	logModule::LogManagerInstance::Init(logModule::LogManager::Create());
-	ecsModule::RegistryInstance::Init(ecsModule::Registry::Create());
 
 	pce::log("Start game initializing");
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -76,7 +76,12 @@ void Game::Run() {
 }
 
 void Game::Setup() {
+	// load assets
+	resourceModule::ResourceManagerInstance::Init(resourceModule::ResourceManager::Create(m_renderer.get()));
+	auto resourceManager = resourceModule::ResourceManagerInstance::GetInstance();
+	resourceManager.AddTexture("images/tank-panther-right.png", "tank.panther.right");
 	// create ECS systems
+	ecsModule::RegistryInstance::Init(ecsModule::Registry::Create());
 	auto& registry = ecsModule::RegistryInstance::GetInstance();
 
 	registry.AddSystem<ecsModule::systems::MovementSystem>();

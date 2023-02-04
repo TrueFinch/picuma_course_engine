@@ -12,11 +12,11 @@
 
 namespace pce::ecsModule::components {
 	struct SpriteComponent : public Component<SpriteComponent> {
-		std::string path;
+		std::string id;
 		uint32 width;
 		uint32 height;
 
-		SpriteComponent(std::string  path, uint32 width, uint32 height)
-			: path(std::move(path)), width(width), height(height) {}
+		SpriteComponent(std::string id, uint32 width, uint32 height)
+			: id(std::move(id)), width(width), height(height) {}
 	};
 }
