@@ -15,6 +15,7 @@
 #include "ecsModule/systems/MovementSystem.h"
 #include "ecsModule/systems/RenderSystem.h"
 #include "resourceModule/ResourceManager.h"
+#include "ecsModule/components/SpriteComponent.h"
 
 using namespace pce;
 
@@ -78,7 +79,7 @@ void Game::Run() {
 void Game::Setup() {
 	// load assets
 	resourceModule::ResourceManagerInstance::Init(resourceModule::ResourceManager::Create(m_renderer.get()));
-	auto resourceManager = resourceModule::ResourceManagerInstance::GetInstance();
+	auto& resourceManager = resourceModule::ResourceManagerInstance::GetInstance();
 	resourceManager.AddTexture("images/tank-panther-right.png", "tank.panther.right");
 	// create ECS systems
 	ecsModule::RegistryInstance::Init(ecsModule::Registry::Create());
@@ -91,6 +92,7 @@ void Game::Setup() {
 	auto tank = registry.CreateEntity();
 	tank.AddComponent<ecsModule::components::TransformComponent>(glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
 	tank.AddComponent<ecsModule::components::RigidbodyComponent>(glm::vec2(50.f, 10.f));
+	tank.AddComponent<ecsModule::components::SpriteComponent>("tank.panther.right");
 }
 
 void Game::ProcessInput() {

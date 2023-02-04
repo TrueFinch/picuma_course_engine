@@ -5,6 +5,7 @@
 #pragma once
 
 #include <utility>
+#include <optional>
 
 #include <SDL2/SDL.h>
 
@@ -13,10 +14,12 @@
 namespace pce::ecsModule::components {
 	struct SpriteComponent : public Component<SpriteComponent> {
 		std::string id;
-		uint32 width;
-		uint32 height;
+		glm::i32vec2 srcRectPos;
+		SDL_RendererFlip flip;
+		std::optional<glm::u32vec2> size;
 
-		SpriteComponent(std::string id, uint32 width, uint32 height)
-			: id(std::move(id)), width(width), height(height) {}
+		SpriteComponent(std::string id, glm::i32vec2 srcRectPos = { 0, 0 },
+						SDL_RendererFlip flip = SDL_FLIP_NONE, std::optional<glm::u32vec2> size = std::nullopt)
+				: id(std::move(id)), srcRectPos(srcRectPos), flip(flip), size(size) {}
 	};
 }

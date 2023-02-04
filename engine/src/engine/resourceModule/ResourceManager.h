@@ -15,6 +15,16 @@
 namespace pce::resourceModule {
 	class ResourceManager final {
 	public:
+		~ResourceManager() = default;
+
+		ResourceManager(const ResourceManager&) = delete;
+
+		ResourceManager(ResourceManager&&) = delete;
+
+		ResourceManager& operator=(const ResourceManager&) = delete;
+
+		ResourceManager& operator=(ResourceManager&&) = delete;
+
 		[[nodiscard]] static std::unique_ptr<ResourceManager> Create(SDL_Renderer* renderer);
 
 		void AddTexture(const std::string& path);
