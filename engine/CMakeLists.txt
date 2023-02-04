@@ -11,6 +11,7 @@ set(ENGINE_HEADERS
 	src/engine/ecsModule/ECS.h
 	src/engine/ecsModule/components/TransformComponent.h
 	src/engine/ecsModule/components/RigidbodyComponent.h
+	src/engine/ecsModule/components/SpriteComponent.h
 	src/engine/ecsModule/systems/MovementSystem.h
 )
 
