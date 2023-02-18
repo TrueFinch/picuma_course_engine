@@ -197,6 +197,14 @@ namespace pce::ecsModule {
 	 */
 	class Registry { // TODO inherit from SystemInstance
 	public:
+		Registry(const Registry&) = delete;
+
+		Registry(Registry&&) = delete;
+
+		Registry& operator=(const Registry&) = delete;
+
+		Registry& operator=(Registry&&) = delete;
+
 		[[nodiscard]] static std::unique_ptr<Registry> Create();
 
 		[[nodiscard]] Entity CreateEntity();
