@@ -18,8 +18,9 @@ namespace pce::ecsModule::components {
 		SDL_RendererFlip flip;
 		std::optional<glm::u32vec2> size;
 
-		SpriteComponent(std::string id, glm::i32vec2 srcRectPos = { 0, 0 },
-						SDL_RendererFlip flip = SDL_FLIP_NONE, std::optional<glm::u32vec2> size = std::nullopt)
-				: id(std::move(id)), srcRectPos(srcRectPos), flip(flip), size(size) {}
+		explicit SpriteComponent(std::string id, glm::i32vec2 srcRectPos = { 0, 0 },
+								 std::optional<glm::u32vec2> size = std::nullopt,
+								 SDL_RendererFlip flip = SDL_FLIP_NONE)
+			: id(std::move(id)), srcRectPos(srcRectPos), flip(flip), size(size) {}
 	};
 }

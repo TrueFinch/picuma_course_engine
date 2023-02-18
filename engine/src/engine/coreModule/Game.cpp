@@ -5,6 +5,7 @@
 #include <iostream>
 #include <SDL2/SDL_image.h>
 #include <glm/glm.hpp>
+#include <fstream>
 
 
 #include "Game.h"
@@ -76,11 +77,46 @@ void Game::Run() {
 	}
 }
 
+void Game::LoadLevel() {
+	int tileSize = 32;
+	float tileScale = 1.f;
+	int mapNumCols = 25;
+	int mapNumRows = 20;
+
+	resourceModule::ResourceManagerInstance::GetInstance().AddTexture("images/jungle.png", "tilemap");
+
+	std::fstream mapFile;
+	mapFile.open("../assets/tilemaps/jungle.map");
+	if (!mapFile.is_open()) {
+		pce::log("Map is not loaded!");
+	}
+	auto& registry = ecsModule::RegistryInstance::GetInstance();
+
+	for (auto y = 0; y < mapNumRows; ++y) {
+		for (auto x = 0; x < mapNumCols; ++x) {
+			char ch;
+			mapFile.get(ch);
+			int srcRectY = std::atoi(&ch) * tileSize;
+			mapFile.get(ch);
+			int srcRectX = std::atoi(&ch) * tileSize;
+			mapFile.ignore();
+
+			auto tileEntity = registry.CreateEntity();
+			tileEntity.AddComponent<ecsModule::components::TransformComponent>(
+				glm::vec2(x * (tileScale * tileSize), y * (tileScale * tileSize)), glm::vec2(tileScale, tileScale), 0.f
+			);
+			tileEntity.AddComponent<ecsModule::components::SpriteComponent>(
+				"tilemap", glm::i32vec2{ srcRectX, srcRectY }, glm::i32vec2{ tileSize, tileSize }
+			);
+		}
+	}
+	mapFile.close();
+
+}
+
 void Game::Setup() {
-	// load assets
 	resourceModule::ResourceManagerInstance::Init(resourceModule::ResourceManager::Create(m_renderer.get()));
-	auto& resourceManager = resourceModule::ResourceManagerInstance::GetInstance();
-	resourceManager.AddTexture("images/tank-panther-right.png", "tank.panther.right");
+
 	// create ECS systems
 	ecsModule::RegistryInstance::Init(ecsModule::Registry::Create());
 	auto& registry = ecsModule::RegistryInstance::GetInstance();
@@ -88,11 +124,16 @@ void Game::Setup() {
 	registry.AddSystem<ecsModule::systems::MovementSystem>();
 	registry.AddSystem<ecsModule::systems::RenderSystem>();
 	registry.GetSystem<ecsModule::systems::RenderSystem>().lock()->SetRenderer(m_renderer.get());
+	// load assets
+	auto& resourceManager = resourceModule::ResourceManagerInstance::GetInstance();
+	resourceManager.AddTexture("images/tank-panther-right.png", "tank.panther.right");
 
 	auto tank = registry.CreateEntity();
 	tank.AddComponent<ecsModule::components::TransformComponent>(glm::vec2(10.f, 10.f), glm::vec2(1.f, 1.f), 0.f);
 	tank.AddComponent<ecsModule::components::RigidbodyComponent>(glm::vec2(50.f, 10.f));
 	tank.AddComponent<ecsModule::components::SpriteComponent>("tank.panther.right");
+
+	LoadLevel();
 }
 
 void Game::ProcessInput() {

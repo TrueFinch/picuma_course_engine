@@ -26,6 +26,8 @@ namespace pce {
 		void Destroy();
 
 	private:
+		void LoadLevel();
+
 		void Setup();
 
 		void ProcessInput();
